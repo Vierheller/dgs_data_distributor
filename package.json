@@ -2,13 +2,23 @@
   "name": "dgs_data_distributor",
   "version": "1.0.0",
   "description": "DHBW goes to Space: Data Distributor service",
-  "main": "/src/index.ts",
+  "main": "/src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vierheller/dgs_data_distributor.git"
   },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vierheller/dgs_data_distributor/issues"
+  },
+  "homepage": "https://github.com/Vierheller/dgs_data_distributor#readme",
   "dependencies": {
+    "@types/nano": "^6.4.4",
     "@types/socket.io-client": "^1.4.32",
     "nano": "^6.4.2",
     "socket.io": "^2.0.4",
