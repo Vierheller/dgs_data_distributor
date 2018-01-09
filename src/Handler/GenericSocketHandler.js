@@ -1,55 +1,56 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var io = require("socket.io-client");
+var LogHandler_1 = require("./LogHandler");
 var GenericSocketHandler = /** @class */ (function () {
     function GenericSocketHandler(name, server, port) {
         this.name = name;
         this.server = server;
         this.port = port;
-        console.log('Socket %s created.', this.name);
+        LogHandler_1.LogHandler.getInstance().log("Socket ${this.name} created.");
         this.setupSocket();
     }
     GenericSocketHandler.prototype.setupSocket = function () {
-        this.socket = io.connect('http://' + this.server + ':' + this.port);
-        //Status Events
-        this.socket.on('connect', this.onConnect.bind(this));
-        this.socket.on('connect_error', this.onConnectError.bind(this));
-        this.socket.on('connect_timeout', this.onConnectTimeout.bind(this));
-        this.socket.on('reconnect', this.onReconnect.bind(this));
-        this.socket.on('reconnecting', this.onReconnectAttempt.bind(this));
-        this.socket.on('reconnect_attempt', this.onReconnectAttempt.bind(this));
-        this.socket.on('reconnect_error', this.onReconnectError.bind(this));
-        this.socket.on('reconnect_failed', this.onReconnectFailed.bind(this));
-        //Data Event
-        this.socket.on('data', this.onData.bind(this));
-        console.log('Socket <%s> setup finished.', this.name);
+        this.socket = io.connect("http://" + this.server + ":" + this.port);
+        // Status Events
+        this.socket.on("connect", this.onConnect.bind(this));
+        this.socket.on("connect_error", this.onConnectError.bind(this));
+        this.socket.on("connect_timeout", this.onConnectTimeout.bind(this));
+        this.socket.on("reconnect", this.onReconnect.bind(this));
+        this.socket.on("reconnecting", this.onReconnectAttempt.bind(this));
+        this.socket.on("reconnect_attempt", this.onReconnectAttempt.bind(this));
+        this.socket.on("reconnect_error", this.onReconnectError.bind(this));
+        this.socket.on("reconnect_failed", this.onReconnectFailed.bind(this));
+        // Data Event
+        this.socket.on("data", this.onData.bind(this));
+        LogHandler_1.LogHandler.getInstance().log("Socket ${this.name} setup finished.");
     };
     GenericSocketHandler.prototype.onConnect = function () {
-        console.log('<%s> connect', this.name);
+        LogHandler_1.LogHandler.getInstance().log("Socket ${this.name} connect");
     };
     GenericSocketHandler.prototype.onConnectError = function (err) {
-        console.log('<%s> connect_error %s', this.name, err);
+        LogHandler_1.LogHandler.getInstance().log("Socket ${this.name} connect_error " + err);
     };
     GenericSocketHandler.prototype.onConnectTimeout = function () {
-        console.log('<%s> connect_timeout', this.name);
+        LogHandler_1.LogHandler.getInstance().log("Socket ${this.name} connect_timeout");
     };
     GenericSocketHandler.prototype.onReconnect = function (attempt) {
-        console.log('<%s> reconnect', 'Attempt #' + attempt, this.name);
+        LogHandler_1.LogHandler.getInstance().log("Socket ${this.name} reconnect Attempt #" + attempt);
     };
     GenericSocketHandler.prototype.onReconnecting = function (attempt) {
-        console.log('<%s> reconnecting', 'Attempt #' + attempt, this.name);
+        LogHandler_1.LogHandler.getInstance().log("Socket ${this.name} reconnecting Attempt #" + attempt);
     };
     GenericSocketHandler.prototype.onReconnectAttempt = function (attempt) {
-        console.log('<%s> reconnect_attempt', this.name);
+        LogHandler_1.LogHandler.getInstance().log("Socket ${this.name} reconnect_attempt");
     };
     GenericSocketHandler.prototype.onReconnectError = function (err) {
-        console.log('<%s> reconnect_error %s', this.name, err);
+        LogHandler_1.LogHandler.getInstance().log("Socket ${this.name} reconnect_error " + err);
     };
     GenericSocketHandler.prototype.onReconnectFailed = function () {
-        console.log('<%s> reconnect_failed', this.name);
+        LogHandler_1.LogHandler.getInstance().log("Socket ${this.name} reconnect_failed");
     };
     GenericSocketHandler.prototype.onData = function (data) {
-        console.log('<%s> Received data: ' + data, this.name);
+        LogHandler_1.LogHandler.getInstance().log("Socket ${this.name} Received data: " + data);
     };
     return GenericSocketHandler;
 }());
