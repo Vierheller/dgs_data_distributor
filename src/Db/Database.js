@@ -6,9 +6,12 @@ var Database = /** @class */ (function () {
         this.dbHelper = Nano(dbAdress + ':' + dbPort);
     }
     Database.prototype.connect = function () {
-        this.db = this.dbHelper.use(this.dbName, this.onConnect);
+        this.db = this.dbHelper.use(this.dbName, this.onConnect.bind(this));
     };
     Database.prototype.saveData = function (data) {
+    };
+    Database.prototype.setupDatabase = function () {
+        //ToDo: Connect to Database, start replication .... 
     };
     Database.prototype.onConnect = function (err, body, header) {
         if (err) {

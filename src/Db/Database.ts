@@ -12,11 +12,15 @@ export class Database{
     }
     
     private connect(){
-        this.db = this.dbHelper.use(this.dbName, this.onConnect);    
+        this.db = this.dbHelper.use(this.dbName, this.onConnect.bind(this));    
     }
     
     private saveData(data: any){
         
+    }
+
+    private setupDatabase(){
+        //ToDo: Connect to Database, start replication .... 
     }
     
     private onConnect(err:any,body:any,header:any){

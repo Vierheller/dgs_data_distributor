@@ -19,15 +19,17 @@ export class GenericSocketHandler{
         
         this.socket = io.connect('http://'+this.server+':'+this.port);
         
-        this.socket.on('connect', this.onConnect);
-        this.socket.on('connect_error', this.onConnectError);
-        this.socket.on('connect_timeout', this.onConnectTimeout);
-        this.socket.on('reconnect', this.onReconnect);
-        this.socket.on('reconnecting', this.onReconnectAttempt);
-        this.socket.on('reconnect_attempt', this.onReconnectAttempt); 
-        this.socket.on('reconnect_error', this.onReconnectError);
-        this.socket.on('reconnect_failed', this.onReconnectFailed);
-        this.socket.on('data', this.onData);
+        //Status Events
+        this.socket.on('connect',       this.onConnect.bind(this));
+        this.socket.on('connect_error', this.onConnectError.bind(this));
+        this.socket.on('connect_timeout', this.onConnectTimeout.bind(this));
+        this.socket.on('reconnect',     this.onReconnect.bind(this));
+        this.socket.on('reconnecting',  this.onReconnectAttempt.bind(this));
+        this.socket.on('reconnect_attempt', this.onReconnectAttempt.bind(this)); 
+        this.socket.on('reconnect_error', this.onReconnectError.bind(this));
+        this.socket.on('reconnect_failed', this.onReconnectFailed.bind(this));
+        //Data Event
+        this.socket.on('data',          this.onData.bind(this));
 
         console.log('Socket <%s> setup finished.', this.name);
     }
