@@ -1,12 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Nano = require("nano");
 var LogHandler_1 = require("../Handler/LogHandler");
 var Database = /** @class */ (function () {
-    function Database(dbAdress, dbPort, dbName) {
-        this.dbHelper = Nano(dbAdress + ":" + dbPort);
+    function Database(name, host, port, user, pass) {
+        this.dbName = name;
+        this.dbHost = host;
+        this.dbPort = port;
+        this.dbUser = user;
+        this.dbPass = pass;
+        // this.dbHelper = Nano({url: "http://" + this.dbAdress + ":" + this.dbPort});
+        this.dbHelper = require("nano")("http://" + this.dbHost + ":" + this.dbPort);
     }
     Database.prototype.connect = function () {
+        // this.dbHelper.use(this.dbName, this.onConnect.bind(this));
         this.db = this.dbHelper.use(this.dbName, this.onConnect.bind(this));
     };
     Database.prototype.saveData = function (data) {

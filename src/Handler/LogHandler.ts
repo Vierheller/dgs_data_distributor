@@ -1,11 +1,10 @@
-import { Logger, LoggerInstance, transports } from "winston";
+import { Logger, LoggerInstance, transports} from "winston";
 
 export class LogHandler {
 
     public static getInstance() {
         if (!LogHandler.instance) {
             LogHandler.instance = new LogHandler();
-            // ... any one time initialization goes here ...
         }
         return LogHandler.instance;
     }

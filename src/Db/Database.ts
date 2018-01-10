@@ -2,21 +2,30 @@ import * as Nano from "nano";
 import {LogHandler} from "../Handler/LogHandler";
 
 export class Database {
-    public dbHelper: any;
-    public db: Nano.DocumentScope<any>;
-    public dbAdress: string;
-    public dbPort: string;
-    public dbName: string;
+    private dbHelper: any;
+    private db: Nano.DocumentScope<any>;
+    private dbHost: string;
+    private dbPort: number;
+    private dbName: string;
+    private dbUser: string;
+    private dbPass: string;
 
-    constructor(dbAdress: string, dbPort: string, dbName: string) {
-        this.dbHelper = Nano(dbAdress + ":" + dbPort);
+    constructor(name: string, host: string, port: number, user: string, pass: string) {
+        this.dbName = name;
+        this.dbHost = host;
+        this.dbPort = port;
+        this.dbUser = user;
+        this.dbPass = pass;
+       // this.dbHelper = Nano({url: "http://" + this.dbAdress + ":" + this.dbPort});
+        this.dbHelper = require("nano")("http://" + this.dbHost + ":" + this.dbPort);
     }
 
-    private connect() {
+    public connect() {
+        // this.dbHelper.use(this.dbName, this.onConnect.bind(this));
         this.db = this.dbHelper.use(this.dbName, this.onConnect.bind(this));
     }
 
-    private saveData(data: any) {
+    public saveData(data: any) {
         // ToDo Implement Saving
         this.db.insert(data, this.onInsert.bind(this));
     }

@@ -3,22 +3,20 @@ import {LogHandler} from "./LogHandler";
 
 export class GenericSocketHandler {
     public socket: SocketIOClient.Socket;
-    public name: string;
-    public server: string;
+    public host: string;
     public port: number;
 
-    constructor(name: string, server: string, port: number) {
-        this.name = name;
-        this.server = server;
+    constructor(host: string, port: number) {
+        this.host = host;
         this.port = port;
 
-        LogHandler.getInstance().log("Socket ${this.name} created.");
+        LogHandler.getInstance().log("Socket " + this.host + " created.");
         this.setupSocket();
     }
 
     private setupSocket() {
 
-        this.socket = io.connect("http://" + this.server + ":" + this.port);
+        this.socket = io.connect("http://" + this.host + ":" + this.port);
 
         // Status Events
         this.socket.on("connect",       this.onConnect.bind(this));
@@ -32,42 +30,42 @@ export class GenericSocketHandler {
         // Data Event
         this.socket.on("data",          this.onData.bind(this));
 
-        LogHandler.getInstance().log("Socket ${this.name} setup finished.");
+        LogHandler.getInstance().log("Socket " + this.host + "  events setup.");
     }
 
     private onConnect() {
-        LogHandler.getInstance().log("Socket ${this.name} connect");
+        LogHandler.getInstance().log("Socket " + this.host + "  connect");
     }
 
     private onConnectError(err: string) {
-        LogHandler.getInstance().log("Socket ${this.name} connect_error " + err);
+        LogHandler.getInstance().log("Socket " + this.host + " connect_error " + err);
     }
 
     private onConnectTimeout() {
-        LogHandler.getInstance().log("Socket ${this.name} connect_timeout");
+        LogHandler.getInstance().log("Socket " + this.host + "  connect_timeout");
     }
 
     private onReconnect(attempt: number) {
-        LogHandler.getInstance().log("Socket ${this.name} reconnect Attempt #" + attempt);
+        LogHandler.getInstance().log("Socket " + this.host + "  reconnect Attempt #" + attempt);
     }
 
     private onReconnecting(attempt: number) {
-        LogHandler.getInstance().log("Socket ${this.name} reconnecting Attempt #" + attempt);
+        LogHandler.getInstance().log("Socket " + this.host + "  reconnecting Attempt #" + attempt);
     }
 
     private onReconnectAttempt(attempt: number) {
-        LogHandler.getInstance().log("Socket ${this.name} reconnect_attempt");
+        LogHandler.getInstance().log("Socket " + this.host + "  reconnect_attempt");
     }
 
     private onReconnectError(err: string) {
-        LogHandler.getInstance().log("Socket ${this.name} reconnect_error " + err);
+        LogHandler.getInstance().log("Socket " + this.host + "  reconnect_error " + err);
     }
 
     private onReconnectFailed() {
-        LogHandler.getInstance().log("Socket ${this.name} reconnect_failed");
+        LogHandler.getInstance().log("Socket " + this.host + "  reconnect_failed");
     }
 
     private onData(data: string) {
-        LogHandler.getInstance().log("Socket ${this.name} Received data: " + data);
+        LogHandler.getInstance().log("Socket " + this.host + "  Received data: " + data);
     }
 }

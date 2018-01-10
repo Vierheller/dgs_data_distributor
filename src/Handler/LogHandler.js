@@ -13,7 +13,6 @@ var LogHandler = /** @class */ (function () {
     LogHandler.getInstance = function () {
         if (!LogHandler.instance) {
             LogHandler.instance = new LogHandler();
-            // ... any one time initialization goes here ...
         }
         return LogHandler.instance;
     };
