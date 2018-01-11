@@ -1,12 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var io = require("socket.io-client");
+var Configuration_1 = require("../config/Configuration");
+var Database_1 = require("../Db/Database");
 var LogHandler_1 = require("./LogHandler");
 var GenericSocketHandler = /** @class */ (function () {
     function GenericSocketHandler(host, port) {
         this.host = host;
         this.port = port;
+        this.db = new Database_1.Database(Configuration_1.Configuration.dbName, Configuration_1.Configuration.dbHost, Configuration_1.Configuration.dbPort, Configuration_1.Configuration.dbUser, Configuration_1.Configuration.dbPass);
         LogHandler_1.LogHandler.getInstance().log("Socket " + this.host + " created.");
+        this.db.connect();
         this.setupSocket();
     }
     GenericSocketHandler.prototype.setupSocket = function () {
@@ -29,6 +33,7 @@ var GenericSocketHandler = /** @class */ (function () {
     };
     GenericSocketHandler.prototype.onConnectError = function (err) {
         LogHandler_1.LogHandler.getInstance().log("Socket " + this.host + " connect_error " + err);
+        this.db.saveData({ doc: { name: err } });
     };
     GenericSocketHandler.prototype.onConnectTimeout = function () {
         LogHandler_1.LogHandler.getInstance().log("Socket " + this.host + "  connect_timeout");

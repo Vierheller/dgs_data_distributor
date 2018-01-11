@@ -1,16 +1,20 @@
 import * as io from "socket.io-client";
+import {Configuration} from "../config/Configuration";
+import { Database } from "../Db/Database";
 import {LogHandler} from "./LogHandler";
 
 export class GenericSocketHandler {
     public socket: SocketIOClient.Socket;
     public host: string;
     public port: number;
+    private db: Database;
 
     constructor(host: string, port: number) {
         this.host = host;
         this.port = port;
-
+        this.db = new Database(Configuration.dbName, Configuration.dbHost, Configuration.dbPort, Configuration.dbUser, Configuration.dbPass);
         LogHandler.getInstance().log("Socket " + this.host + " created.");
+        this.db.connect();
         this.setupSocket();
     }
 
@@ -39,6 +43,7 @@ export class GenericSocketHandler {
 
     private onConnectError(err: string) {
         LogHandler.getInstance().log("Socket " + this.host + " connect_error " + err);
+        this.db.saveData({doc: {name: err}});
     }
 
     private onConnectTimeout() {

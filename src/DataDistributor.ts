@@ -1,5 +1,4 @@
 import {Configuration} from "./config/Configuration";
-import { Database } from "./Db/Database";
 import {GenericSocketHandler} from "./Handler/GenericSocketHandler";
 import {LogHandler} from "./Handler/LogHandler";
 
@@ -8,17 +7,11 @@ export class DataDistributor {
         const dd = new DataDistributor();
         LogHandler.getInstance().log("DataDistributor started");
         dd.setupSocket();
-        dd.setupDatabase();
     }
 
-    private database: Database;
     private socket: GenericSocketHandler;
 
     private setupSocket() {
         this.socket = new GenericSocketHandler(Configuration.socketHost, Configuration.socketPort);
-    }
-
-    private setupDatabase() {
-        this.database = new Database(Configuration.dbName, Configuration.dbHost, Configuration.dbPort, Configuration.dbUser, Configuration.dbPass);
     }
 }

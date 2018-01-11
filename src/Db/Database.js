@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+//import * as Nano from "nano";
+var node_couchdb_client_1 = require("@teammaestro/node-couchdb-client");
 var LogHandler_1 = require("../Handler/LogHandler");
 var Database = /** @class */ (function () {
     function Database(name, host, port, user, pass) {
@@ -8,16 +10,44 @@ var Database = /** @class */ (function () {
         this.dbPort = port;
         this.dbUser = user;
         this.dbPass = pass;
-        // this.dbHelper = Nano({url: "http://" + this.dbAdress + ":" + this.dbPort});
-        this.dbHelper = require("nano")("http://" + this.dbHost + ":" + this.dbPort);
+        this.db = new node_couchdb_client_1.CouchDb({
+            host: "http://" + this.dbHost,
+            port: this.dbPort,
+            auth: {
+                username: this.dbUser,
+                password: this.dbPass,
+            },
+            logging: true,
+            defaultDatabase: this.dbName,
+        });
     }
     Database.prototype.connect = function () {
-        // this.dbHelper.use(this.dbName, this.onConnect.bind(this));
-        this.db = this.dbHelper.use(this.dbName, this.onConnect.bind(this));
+        var _this = this;
+        this.db.checkDatabaseExists(this.dbName)
+            .then(function (result) {
+            LogHandler_1.LogHandler.getInstance().log("Database" + _this.dbName + " available:" + result);
+            _this.db.createDatabase(_this.dbName)
+                .then(function (created) {
+                LogHandler_1.LogHandler.getInstance().log("Database " + _this.dbName + " created:" + created);
+            })
+                .catch(function (err) {
+                LogHandler_1.LogHandler.getInstance().log("Database " + _this.dbName + " :" + err);
+            });
+        })
+            .catch(function (err) {
+            LogHandler_1.LogHandler.getInstance().log("Database " + _this.dbName + " :" + err);
+        });
     };
     Database.prototype.saveData = function (data) {
+        var _this = this;
         // ToDo Implement Saving
-        this.db.insert(data, this.onInsert.bind(this));
+        // this.db.insert(data, this.onInsert.bind(this));
+        this.db.createDocument(data)
+            .then(function (docs) {
+            LogHandler_1.LogHandler.getInstance().log("Database " + _this.dbName + " :" + docs);
+        }).catch(function (errors) {
+            LogHandler_1.LogHandler.getInstance().log("Database " + _this.dbName + " :" + errors.message);
+        });
     };
     Database.prototype.setupDatabase = function () {
         // ToDo: Connect to Database, start replication ....

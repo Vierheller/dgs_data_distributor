@@ -1,9 +1,11 @@
-import * as Nano from "nano";
+//import * as Nano from "nano";
+import { CouchDb } from "@teammaestro/node-couchdb-client";
+import { error } from "util";
 import {LogHandler} from "../Handler/LogHandler";
 
 export class Database {
     private dbHelper: any;
-    private db: Nano.DocumentScope<any>;
+    private db: CouchDb; // Nano.DocumentScope<any>;
     private dbHost: string;
     private dbPort: number;
     private dbName: string;
@@ -16,18 +18,45 @@ export class Database {
         this.dbPort = port;
         this.dbUser = user;
         this.dbPass = pass;
-       // this.dbHelper = Nano({url: "http://" + this.dbAdress + ":" + this.dbPort});
-        this.dbHelper = require("nano")("http://" + this.dbHost + ":" + this.dbPort);
+
+        this.db = new CouchDb({
+            host: "http://" + this.dbHost,
+            port: this.dbPort,
+            auth: {
+                username: this.dbUser,
+                password: this.dbPass,
+            },
+            logging: true,
+            defaultDatabase: this.dbName,
+        });
     }
 
     public connect() {
-        // this.dbHelper.use(this.dbName, this.onConnect.bind(this));
-        this.db = this.dbHelper.use(this.dbName, this.onConnect.bind(this));
+        this.db.checkDatabaseExists(this.dbName)
+                .then((result) => {
+                    LogHandler.getInstance().log("Database" + this.dbName + " available:" + result);
+                    this.db.createDatabase(this.dbName)
+                        .then((created) => {
+                            LogHandler.getInstance().log("Database " + this.dbName + " created:" + created);
+                    })
+                    .catch((err) => {
+                        LogHandler.getInstance().log("Database " + this.dbName + " :" + err);
+                    });
+                })
+                .catch((err) => {
+                    LogHandler.getInstance().log("Database " + this.dbName + " :" + err);
+                });
     }
 
     public saveData(data: any) {
         // ToDo Implement Saving
-        this.db.insert(data, this.onInsert.bind(this));
+        // this.db.insert(data, this.onInsert.bind(this));
+        this.db.createDocument(data)
+                .then((docs) => {
+                    LogHandler.getInstance().log("Database " + this.dbName + " :" + docs);
+                }).catch((errors) => {
+                    LogHandler.getInstance().log("Database " + this.dbName + " :" + errors.message);
+                });
     }
 
     private setupDatabase() {
