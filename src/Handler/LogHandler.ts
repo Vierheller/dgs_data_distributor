@@ -16,12 +16,12 @@ export class LogHandler {
         this.writer = new Logger({
             transports: [
             new transports.Console({timestamp: true}),
-            new transports.File ({timestamp: true, filename: "somefile.log" }),
+            new transports.File ({timestamp: true, filename: "dgs_data_distributor.log" }),
             ],
         });
     }
 
-    public log(message: string) {
-        this.writer.info(message);
+    public log(message: string, ...args: any[]) {
+        this.writer.info(message, args);
     }
 }

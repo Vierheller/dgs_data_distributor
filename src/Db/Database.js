@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-//import * as Nano from "nano";
 var node_couchdb_client_1 = require("@teammaestro/node-couchdb-client");
+var Queue_1 = require("../classes/Queue");
 var LogHandler_1 = require("../Handler/LogHandler");
 var Database = /** @class */ (function () {
     function Database(name, host, port, user, pass) {
@@ -10,63 +10,44 @@ var Database = /** @class */ (function () {
         this.dbPort = port;
         this.dbUser = user;
         this.dbPass = pass;
+        this.dbQueue = new Queue_1.Queue();
         this.db = new node_couchdb_client_1.CouchDb({
-            host: "http://" + this.dbHost,
-            port: this.dbPort,
             auth: {
-                username: this.dbUser,
                 password: this.dbPass,
+                username: this.dbUser,
             },
-            logging: true,
             defaultDatabase: this.dbName,
+            host: "http://" + this.dbHost,
+            logging: true,
+            port: this.dbPort,
         });
     }
     Database.prototype.connect = function () {
         var _this = this;
         this.db.checkDatabaseExists(this.dbName)
             .then(function (result) {
-            LogHandler_1.LogHandler.getInstance().log("Database" + _this.dbName + " available:" + result);
+            LogHandler_1.LogHandler.getInstance().log("Database <%s> available:" + result, _this.dbName);
             _this.db.createDatabase(_this.dbName)
                 .then(function (created) {
-                LogHandler_1.LogHandler.getInstance().log("Database " + _this.dbName + " created:" + created);
+                LogHandler_1.LogHandler.getInstance().log("Database <%s> created:" + created, _this.dbName);
             })
                 .catch(function (err) {
-                LogHandler_1.LogHandler.getInstance().log("Database " + _this.dbName + " :" + err);
+                LogHandler_1.LogHandler.getInstance().log("Database <%s>  :" + err, _this.dbName);
             });
         })
             .catch(function (err) {
-            LogHandler_1.LogHandler.getInstance().log("Database " + _this.dbName + " :" + err);
+            LogHandler_1.LogHandler.getInstance().log("Database <%s>  :" + err, _this.dbName);
         });
     };
     Database.prototype.saveData = function (data) {
         var _this = this;
-        // ToDo Implement Saving
-        // this.db.insert(data, this.onInsert.bind(this));
-        this.db.createDocument(data)
+        this.db.createDocument({ doc: { data: data } })
             .then(function (docs) {
-            LogHandler_1.LogHandler.getInstance().log("Database " + _this.dbName + " :" + docs);
+            LogHandler_1.LogHandler.getInstance().log("Database Insert succesful<%s>  :" + docs, _this.dbName);
         }).catch(function (errors) {
-            LogHandler_1.LogHandler.getInstance().log("Database " + _this.dbName + " :" + errors.message);
+            LogHandler_1.LogHandler.getInstance().log("Database Insert failed. <%s> :" + errors.message, _this.dbName);
+            _this.dbQueue.push(data);
         });
-    };
-    Database.prototype.setupDatabase = function () {
-        // ToDo: Connect to Database, start replication ....
-    };
-    Database.prototype.onConnect = function (err, body, header) {
-        if (err) {
-            LogHandler_1.LogHandler.getInstance().log("Connection Error %s ." + err.message);
-        }
-        else {
-            LogHandler_1.LogHandler.getInstance().log("Connection to ${this.dbName} succesful. Response: " + body + header);
-        }
-    };
-    Database.prototype.onInsert = function (err, body, header) {
-        if (err) {
-            LogHandler_1.LogHandler.getInstance().log("Database <%s> Error inserting Error %s ." + err.message);
-        }
-        else {
-            LogHandler_1.LogHandler.getInstance().log("Database <%s> insert to %s succesful.");
-        }
     };
     return Database;
 }());

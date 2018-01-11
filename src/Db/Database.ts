@@ -1,16 +1,16 @@
-//import * as Nano from "nano";
 import { CouchDb } from "@teammaestro/node-couchdb-client";
 import { error } from "util";
-import {LogHandler} from "../Handler/LogHandler";
+import { Queue } from "../classes/Queue";
+import { LogHandler } from "../Handler/LogHandler";
 
 export class Database {
-    private dbHelper: any;
-    private db: CouchDb; // Nano.DocumentScope<any>;
+    private db: CouchDb;
     private dbHost: string;
     private dbPort: number;
     private dbName: string;
     private dbUser: string;
     private dbPass: string;
+    private dbQueue: Queue<any>;
 
     constructor(name: string, host: string, port: number, user: string, pass: string) {
         this.dbName = name;
@@ -18,64 +18,44 @@ export class Database {
         this.dbPort = port;
         this.dbUser = user;
         this.dbPass = pass;
+        this.dbQueue = new Queue<any>();
 
         this.db = new CouchDb({
-            host: "http://" + this.dbHost,
-            port: this.dbPort,
             auth: {
-                username: this.dbUser,
                 password: this.dbPass,
+                username: this.dbUser,
             },
-            logging: true,
             defaultDatabase: this.dbName,
+            host: "http://" + this.dbHost,
+            logging: true,
+            port: this.dbPort,
         });
     }
 
     public connect() {
         this.db.checkDatabaseExists(this.dbName)
                 .then((result) => {
-                    LogHandler.getInstance().log("Database" + this.dbName + " available:" + result);
+                    LogHandler.getInstance().log("Database <%s> available:" + result, this.dbName);
                     this.db.createDatabase(this.dbName)
                         .then((created) => {
-                            LogHandler.getInstance().log("Database " + this.dbName + " created:" + created);
+                            LogHandler.getInstance().log("Database <%s> created:" + created, this.dbName);
                     })
                     .catch((err) => {
-                        LogHandler.getInstance().log("Database " + this.dbName + " :" + err);
+                        LogHandler.getInstance().log("Database <%s>  :" + err, this.dbName);
                     });
                 })
                 .catch((err) => {
-                    LogHandler.getInstance().log("Database " + this.dbName + " :" + err);
+                    LogHandler.getInstance().log("Database <%s>  :" + err, this.dbName);
                 });
     }
 
     public saveData(data: any) {
-        // ToDo Implement Saving
-        // this.db.insert(data, this.onInsert.bind(this));
-        this.db.createDocument(data)
+        this.db.createDocument({doc: {data}})
                 .then((docs) => {
-                    LogHandler.getInstance().log("Database " + this.dbName + " :" + docs);
+                    LogHandler.getInstance().log("Database Insert succesful<%s>  :" + docs, this.dbName);
                 }).catch((errors) => {
-                    LogHandler.getInstance().log("Database " + this.dbName + " :" + errors.message);
+                    LogHandler.getInstance().log("Database Insert failed. <%s> :" + errors.message, this.dbName);
+                    this.dbQueue.push(data);
                 });
-    }
-
-    private setupDatabase() {
-        // ToDo: Connect to Database, start replication ....
-    }
-
-    private onConnect(err: any, body: any, header: any) {
-        if (err) {
-            LogHandler.getInstance().log("Connection Error %s ." + err.message);
-        } else {
-            LogHandler.getInstance().log("Connection to ${this.dbName} succesful. Response: " + body + header);
-        }
-    }
-
-    private onInsert(err: any, body: any, header: any) {
-        if (err) {
-            LogHandler.getInstance().log("Database <%s> Error inserting Error %s ." + err.message);
-        } else {
-            LogHandler.getInstance().log("Database <%s> insert to %s succesful.");
-        }
     }
 }

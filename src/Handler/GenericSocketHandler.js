@@ -33,7 +33,6 @@ var GenericSocketHandler = /** @class */ (function () {
     };
     GenericSocketHandler.prototype.onConnectError = function (err) {
         LogHandler_1.LogHandler.getInstance().log("Socket " + this.host + " connect_error " + err);
-        this.db.saveData({ doc: { name: err } });
     };
     GenericSocketHandler.prototype.onConnectTimeout = function () {
         LogHandler_1.LogHandler.getInstance().log("Socket " + this.host + "  connect_timeout");

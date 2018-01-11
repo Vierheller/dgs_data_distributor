@@ -43,7 +43,6 @@ export class GenericSocketHandler {
 
     private onConnectError(err: string) {
         LogHandler.getInstance().log("Socket " + this.host + " connect_error " + err);
-        this.db.saveData({doc: {name: err}});
     }
 
     private onConnectTimeout() {
