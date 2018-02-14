@@ -12,6 +12,7 @@ export class GenericSocketHandler {
     constructor(host: string, port: number) {
         this.host = host;
         this.port = port;
+        // tslint:disable-next-line:max-line-length
         this.db = new Database(Configuration.dbName, Configuration.dbHost, Configuration.dbPort, Configuration.dbUser, Configuration.dbPass);
         LogHandler.getInstance().log("Socket " + this.host + " created.");
         this.db.connect();
@@ -32,7 +33,7 @@ export class GenericSocketHandler {
         this.socket.on("reconnect_error", this.onReconnectError.bind(this));
         this.socket.on("reconnect_failed", this.onReconnectFailed.bind(this));
         // Data Event
-        this.socket.on("data",          this.onData.bind(this));
+        this.socket.on("event",          this.onData.bind(this));
 
         LogHandler.getInstance().log("Socket " + this.host + "  events setup.");
     }
@@ -71,5 +72,6 @@ export class GenericSocketHandler {
 
     private onData(data: string) {
         LogHandler.getInstance().log("Socket " + this.host + "  Received data: " + data);
+        this.db.saveData(JSON.parse(data));
     }
 }

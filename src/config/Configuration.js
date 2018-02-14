@@ -8,7 +8,7 @@ var Configuration = /** @class */ (function () {
     Configuration.dbPort = 5984;
     Configuration.dbUser = "admin";
     Configuration.dbPass = "admin";
-    Configuration.socketHost = "localhost";
+    Configuration.socketHost = "rpi-lora-gtw";
     Configuration.socketPort = 3000;
     return Configuration;
 }());

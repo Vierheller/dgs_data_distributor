@@ -8,6 +8,7 @@ var GenericSocketHandler = /** @class */ (function () {
     function GenericSocketHandler(host, port) {
         this.host = host;
         this.port = port;
+        // tslint:disable-next-line:max-line-length
         this.db = new Database_1.Database(Configuration_1.Configuration.dbName, Configuration_1.Configuration.dbHost, Configuration_1.Configuration.dbPort, Configuration_1.Configuration.dbUser, Configuration_1.Configuration.dbPass);
         LogHandler_1.LogHandler.getInstance().log("Socket " + this.host + " created.");
         this.db.connect();
@@ -25,7 +26,7 @@ var GenericSocketHandler = /** @class */ (function () {
         this.socket.on("reconnect_error", this.onReconnectError.bind(this));
         this.socket.on("reconnect_failed", this.onReconnectFailed.bind(this));
         // Data Event
-        this.socket.on("data", this.onData.bind(this));
+        this.socket.on("event", this.onData.bind(this));
         LogHandler_1.LogHandler.getInstance().log("Socket " + this.host + "  events setup.");
     };
     GenericSocketHandler.prototype.onConnect = function () {
@@ -54,6 +55,7 @@ var GenericSocketHandler = /** @class */ (function () {
     };
     GenericSocketHandler.prototype.onData = function (data) {
         LogHandler_1.LogHandler.getInstance().log("Socket " + this.host + "  Received data: " + data);
+        this.db.saveData(JSON.parse(data));
     };
     return GenericSocketHandler;
 }());
