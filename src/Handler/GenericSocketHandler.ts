@@ -16,13 +16,12 @@ export class GenericSocketHandler {
         this.db = new Database(Configuration.dbName, Configuration.dbHost, Configuration.dbPort, Configuration.dbUser, Configuration.dbPass);
         LogHandler.getInstance().log("Socket " + this.host + " created.");
         this.db.connect();
+
+        this.socket = io.connect("http://" + this.host + ":" + this.port);
         this.setupSocket();
     }
 
     private setupSocket() {
-
-        this.socket = io.connect("http://" + this.host + ":" + this.port);
-
         // Status Events
         this.socket.on("connect",       this.onConnect.bind(this));
         this.socket.on("connect_error", this.onConnectError.bind(this));

@@ -12,10 +12,10 @@ var GenericSocketHandler = /** @class */ (function () {
         this.db = new Database_1.Database(Configuration_1.Configuration.dbName, Configuration_1.Configuration.dbHost, Configuration_1.Configuration.dbPort, Configuration_1.Configuration.dbUser, Configuration_1.Configuration.dbPass);
         LogHandler_1.LogHandler.getInstance().log("Socket " + this.host + " created.");
         this.db.connect();
+        this.socket = io.connect("http://" + this.host + ":" + this.port);
         this.setupSocket();
     }
     GenericSocketHandler.prototype.setupSocket = function () {
-        this.socket = io.connect("http://" + this.host + ":" + this.port);
         // Status Events
         this.socket.on("connect", this.onConnect.bind(this));
         this.socket.on("connect_error", this.onConnectError.bind(this));
